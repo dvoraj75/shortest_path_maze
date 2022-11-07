@@ -68,144 +68,144 @@ def find_point(maze: List[List[str]], char: str) -> Point:
     raise ValueError(f"Maze doesnt have point with '{char}' character")
 
 
-def solve_with_bfs(maze: List[List[str]]) -> Solution:
+class BFSMazeSolver:
     """
-    Find shortes path in the maze with Breadth-first search algorithm
+    Class represents solver for BFS algorithm
     """
-    start_point = find_point(maze, "0")
-    end_point = find_point(maze, "F")
-    points = deque()
-    points.append(start_point)
-
-    while points:
-        current_point = points.popleft()
-        if current_point == end_point:
-            break
-        points.extend(make_steps(maze, current_point))
-
-    if maze[end_point.y][end_point.x] == "F":
-        raise ValueError("Maze doesn't have solution!")
-    step_count = find_shortest_path(maze, end_point)
-    return Solution(maze=maze, steps=step_count, method="bfs")
-
-
-def can_make_step(
-    maze: List[List[str]], x: int, y: int, maze_len_x: int, maze_len_y: int
-) -> bool:
-    """
-    Check if can make step
-    """
-    return is_safe(x, y, maze_len_x, maze_len_y) and (
-        maze[y][x] == " " or maze[y][x] == "F"
-    )
-
-
-def is_safe(x: int, y: int, x_len: int, y_len: int) -> bool:
-    """
-    Check if index is not out of the range
-    """
-    return 0 <= x < x_len and 0 <= y < y_len
-
-
-def make_steps(maze: List[List[str]], current_point: Point) -> List[Point]:
-    """
-    Look arround and make steps in four directions
-    """
-    current_step = int(maze[current_point.y][current_point.x])
-    next_points = []
-
-    # step left
-    if can_make_step(
-        maze,
-        current_point.x - 1,
-        current_point.y,
-        len(maze[current_point.y]),
-        len(maze),
+    def __init__(
+        self, maze: List[List[str]], star_point_char: str, end_point_char: str
     ):
-        maze[current_point.y][current_point.x - 1] = current_step + 1
-        next_points.append(Point(current_point.x - 1, current_point.y))
+        self.maze: List[List[str]] = maze
+        self.start_point: Point = find_point(self.maze, star_point_char)
+        self.end_point: Point = find_point(self.maze, end_point_char)
+        self.step_count: int = 0
 
-    # step right
-    if can_make_step(
-        maze,
-        current_point.x + 1,
-        current_point.y,
-        len(maze[current_point.y]),
-        len(maze),
-    ):
-        maze[current_point.y][current_point.x + 1] = current_step + 1
-        next_points.append(Point(current_point.x + 1, current_point.y))
+    def solve(self):
+        """
+        Solve the maze
+        """
+        points = deque()
+        points.append(self.start_point)
 
-    # step up
-    if can_make_step(
-        maze,
-        current_point.x,
-        current_point.y - 1,
-        len(maze[current_point.y]),
-        len(maze),
-    ):
-        maze[current_point.y - 1][current_point.x] = current_step + 1
-        next_points.append(Point(current_point.x, current_point.y - 1))
+        while points:
+            current_point = points.popleft()
+            if current_point == self.end_point:
+                break
+            points.extend(self.make_steps(current_point))
 
-    # step down
-    if can_make_step(
-        maze,
-        current_point.x,
-        current_point.y + 1,
-        len(maze[current_point.y]),
-        len(maze),
-    ):
-        maze[current_point.y + 1][current_point.x] = current_step + 1
-        next_points.append(Point(current_point.x, current_point.y + 1))
+        if maze[self.end_point.y][self.end_point.x] == "F":
+            raise ValueError("Maze doesn't have solution!")
 
-    return next_points
+        self.find_shortest_path()
 
+    def make_steps(self, current_point: Point) -> List[Point]:
+        """
+        Look arround and make steps in four directions
+        """
+        current_step = int(maze[current_point.y][current_point.x])
+        next_points = []
 
-def find_shortest_path(maze: List[List[str]], end_point: Point) -> int:
-    """
-    Go back to the start and count the steps
-    """
-    current_point = end_point
-    step_counter = 0
-    current_step = int(maze[end_point.y][end_point.x])
-    while current_step:
         # step left
-        if (
-            current_point.x
-            and isinstance(maze[current_point.y][current_point.x - 1], int)
-            and maze[current_point.y][current_point.x - 1] == current_step - 1
+        if self.can_make_step(
+            current_point,
+            current_point.x - 1,
+            current_point.y,
         ):
-            maze[current_point.y][current_point.x - 1] = "-"
-            current_point = Point(current_point.x - 1, current_point.y)
+            self.maze[current_point.y][current_point.x - 1] = current_step + 1
+            next_points.append(Point(current_point.x - 1, current_point.y))
 
         # step right
-        elif (
-            current_point.x < len(maze[current_point.y]) - 1
-            and isinstance(maze[current_point.y][current_point.x + 1], int)
-            and maze[current_point.y][current_point.x + 1] == current_step - 1
+        if self.can_make_step(
+            current_point,
+            current_point.x + 1,
+            current_point.y,
         ):
-            maze[current_point.y][current_point.x + 1] = "-"
-            current_point = Point(current_point.x + 1, current_point.y)
+            self.maze[current_point.y][current_point.x + 1] = current_step + 1
+            next_points.append(Point(current_point.x + 1, current_point.y))
+
         # step up
-        elif (
-            current_point.y
-            and isinstance(maze[current_point.y - 1][current_point.x], int)
-            and maze[current_point.y - 1][current_point.x] == current_step - 1
+        if self.can_make_step(
+            current_point,
+            current_point.x,
+            current_point.y - 1,
         ):
-            maze[current_point.y - 1][current_point.x] = "|"
-            current_point = Point(current_point.x, current_point.y - 1)
+            self.maze[current_point.y - 1][current_point.x] = current_step + 1
+            next_points.append(Point(current_point.x, current_point.y - 1))
+
         # step down
-        elif (
-            current_point.y < len(maze) - 1
-            and isinstance(maze[current_point.y + 1][current_point.x], int)
-            and maze[current_point.y + 1][current_point.x] == current_step - 1
+        if self.can_make_step(
+            current_point,
+            current_point.x,
+            current_point.y + 1,
         ):
-            maze[current_point.y + 1][current_point.x] = "|"
-            current_point = Point(current_point.x, current_point.y + 1)
-        step_counter += 1
-        current_step -= 1
-    maze[end_point.y][end_point.x] = "F"
-    return step_counter
+            self.maze[current_point.y + 1][current_point.x] = current_step + 1
+            next_points.append(Point(current_point.x, current_point.y + 1))
+
+        return next_points
+
+    def can_make_step(self, current_point: Point, x: int, y: int) -> bool:
+        """
+        Check if can make step
+        """
+        return self.is_safe(current_point, x, y) and (self.maze[y][x] == " " or self.maze[y][x] == "F")
+
+    def is_safe(self, current_point: Point, x: int, y: int) -> bool:
+        """
+        Check if index is not out of the range
+        """
+        return 0 <= x < len(self.maze[current_point.y]) and 0 <= y < len(self.maze)
+
+    def find_shortest_path(self):
+        """
+        Go back to the start and count the steps
+        """
+        current_point = self.end_point
+        current_step = int(self.maze[self.end_point.y][self.end_point.x])
+        while current_step:
+            # step left
+            if (
+                current_point.x
+                and isinstance(self.maze[current_point.y][current_point.x - 1], int)
+                and self.maze[current_point.y][current_point.x - 1] == current_step - 1
+            ):
+                self.maze[current_point.y][current_point.x - 1] = "-"
+                current_point = Point(current_point.x - 1, current_point.y)
+
+            # step right
+            elif (
+                current_point.x < len(self.maze[current_point.y]) - 1
+                and isinstance(self.maze[current_point.y][current_point.x + 1], int)
+                and self.maze[current_point.y][current_point.x + 1] == current_step - 1
+            ):
+                self.maze[current_point.y][current_point.x + 1] = "-"
+                current_point = Point(current_point.x + 1, current_point.y)
+            # step up
+            elif (
+                current_point.y
+                and isinstance(self.maze[current_point.y - 1][current_point.x], int)
+                and self.maze[current_point.y - 1][current_point.x] == current_step - 1
+            ):
+                self.maze[current_point.y - 1][current_point.x] = "|"
+                current_point = Point(current_point.x, current_point.y - 1)
+            # step down
+            elif (
+                current_point.y < len(self.maze) - 1
+                and isinstance(self.maze[current_point.y + 1][current_point.x], int)
+                and self.maze[current_point.y + 1][current_point.x] == current_step - 1
+            ):
+                maze[current_point.y + 1][current_point.x] = "|"
+                current_point = Point(current_point.x, current_point.y + 1)
+            self.step_count += 1
+            current_step -= 1
+        self.maze[self.end_point.y][self.end_point.x] = "F"
+
+    def print_solution(self, _print_maze: bool = False) -> None:
+        """
+        Print final solution
+        """
+        print(f"SOLUTION:\nStep count: {self.step_count}\nused method: bfs")
+        if _print_maze:
+            print_maze(self.maze)
 
 
 if __name__ == "__main__":
@@ -213,13 +213,10 @@ if __name__ == "__main__":
         prog="MazeSolver", description="Program finds the shortest solution for maze"
     )
     parser.add_argument("maze_file", type=argparse.FileType("r"))
-    parser.add_argument("--print-maze", action="store_true", dest="print_maze")
+    parser.add_argument("-p", "--print-maze", action="store_true", dest="print_maze")
     args = parser.parse_args()
     maze = read_maze(args.maze_file)
 
-    solution = solve_with_bfs(maze)
-
-    if solution:
-        print(f"Solution:\nTotal steps: {solution.steps}\nmethod: {solution.method}")
-        if args.print_maze:
-            print_maze(solution.maze)
+    solver = BFSMazeSolver(maze, "0", "F")
+    solver.solve()
+    solver.print_solution(args.print_maze)
