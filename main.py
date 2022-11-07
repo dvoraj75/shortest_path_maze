@@ -83,6 +83,8 @@ def solve_with_bfs(maze: List[List[str]]) -> Solution:
             break
         points.extend(make_steps(maze, current_point))
 
+    if maze[end_point.y][end_point.x] == "F":
+        raise ValueError("Maze doesn't have solution!")
     step_count = find_shortest_path(maze, end_point)
     return Solution(maze=maze, steps=step_count, method="bfs")
 
