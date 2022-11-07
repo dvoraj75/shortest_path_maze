@@ -1,3 +1,5 @@
+USING BLACK CODE FORMATTER!
+
 usage: MazeSolver [-h] [--print-maze] maze_file
 
 Program finds the shortest solution for maze
