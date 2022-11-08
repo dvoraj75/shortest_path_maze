@@ -115,12 +115,14 @@ class BFSMazeSolver:
 
         for step in self.STEPS:
             if self.can_make_step(
-                current_point,
-                current_point.x + step.x,
-                current_point.y + step.y
+                current_point, current_point.x + step.x, current_point.y + step.y
             ):
-                self.maze[current_point.y + step.y][current_point.x + step.x] = current_step + 1
-                next_points.append(Point(current_point.x + step.x, current_point.y + step.y))
+                self.maze[current_point.y + step.y][current_point.x + step.x] = (
+                    current_step + 1
+                )
+                next_points.append(
+                    Point(current_point.x + step.x, current_point.y + step.y)
+                )
 
         return next_points
 
@@ -145,39 +147,26 @@ class BFSMazeSolver:
         current_point = self.end_point
         current_step = int(self.maze[self.end_point.y][self.end_point.x])
         while current_step:
-            # step left
-            if (
-                current_point.x
-                and isinstance(self.maze[current_point.y][current_point.x - 1], int)
-                and self.maze[current_point.y][current_point.x - 1] == current_step - 1
-            ):
-                self.maze[current_point.y][current_point.x - 1] = "-"
-                current_point = Point(current_point.x - 1, current_point.y)
-
-            # step right
-            elif (
-                current_point.x < len(self.maze[current_point.y]) - 1
-                and isinstance(self.maze[current_point.y][current_point.x + 1], int)
-                and self.maze[current_point.y][current_point.x + 1] == current_step - 1
-            ):
-                self.maze[current_point.y][current_point.x + 1] = "-"
-                current_point = Point(current_point.x + 1, current_point.y)
-            # step up
-            elif (
-                current_point.y
-                and isinstance(self.maze[current_point.y - 1][current_point.x], int)
-                and self.maze[current_point.y - 1][current_point.x] == current_step - 1
-            ):
-                self.maze[current_point.y - 1][current_point.x] = "|"
-                current_point = Point(current_point.x, current_point.y - 1)
-            # step down
-            elif (
-                current_point.y < len(self.maze) - 1
-                and isinstance(self.maze[current_point.y + 1][current_point.x], int)
-                and self.maze[current_point.y + 1][current_point.x] == current_step - 1
-            ):
-                maze[current_point.y + 1][current_point.x] = "|"
-                current_point = Point(current_point.x, current_point.y + 1)
+            for step in self.STEPS:
+                if (
+                    self.is_safe(
+                        current_point,
+                        current_point.x + step.x,
+                        current_point.y + step.y,
+                    )
+                    and isinstance(
+                        self.maze[current_point.y + step.y][current_point.x + step.x],
+                        int,
+                    )
+                    and self.maze[current_point.y + step.y][current_point.x + step.x]
+                    == current_step - 1
+                ):
+                    maze[current_point.y + step.y][current_point.x + step.x] = (
+                        "|" if step.y else "-"
+                    )
+                    current_point = Point(
+                        current_point.x + step.x, current_point.y + step.y
+                    )
             self.step_count += 1
             current_step -= 1
         self.maze[self.end_point.y][self.end_point.x] = "F"
