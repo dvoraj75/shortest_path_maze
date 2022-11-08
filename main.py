@@ -13,8 +13,9 @@ Print out the shortest path found as the result, on the screen.
 """
 
 import argparse
+import typing
 from collections import deque
-from typing import NamedTuple, List, IO
+from typing import NamedTuple, List, IO, Tuple
 
 
 class Solution(NamedTuple):
@@ -72,6 +73,13 @@ class BFSMazeSolver:
     """
     Class represents solver for BFS algorithm
     """
+
+    LEFT: Point = Point(-1, 0)
+    RIGHT: Point = Point(1, 0)
+    UP: Point = Point(0, -1)
+    DOWN: Point = Point(0, 1)
+    STEPS: Tuple = (LEFT, RIGHT, UP, DOWN)
+
     def __init__(
         self, maze: List[List[str]], star_point_char: str, end_point_char: str
     ):
@@ -105,41 +113,14 @@ class BFSMazeSolver:
         current_step = int(maze[current_point.y][current_point.x])
         next_points = []
 
-        # step left
-        if self.can_make_step(
-            current_point,
-            current_point.x - 1,
-            current_point.y,
-        ):
-            self.maze[current_point.y][current_point.x - 1] = current_step + 1
-            next_points.append(Point(current_point.x - 1, current_point.y))
-
-        # step right
-        if self.can_make_step(
-            current_point,
-            current_point.x + 1,
-            current_point.y,
-        ):
-            self.maze[current_point.y][current_point.x + 1] = current_step + 1
-            next_points.append(Point(current_point.x + 1, current_point.y))
-
-        # step up
-        if self.can_make_step(
-            current_point,
-            current_point.x,
-            current_point.y - 1,
-        ):
-            self.maze[current_point.y - 1][current_point.x] = current_step + 1
-            next_points.append(Point(current_point.x, current_point.y - 1))
-
-        # step down
-        if self.can_make_step(
-            current_point,
-            current_point.x,
-            current_point.y + 1,
-        ):
-            self.maze[current_point.y + 1][current_point.x] = current_step + 1
-            next_points.append(Point(current_point.x, current_point.y + 1))
+        for step in self.STEPS:
+            if self.can_make_step(
+                current_point,
+                current_point.x + step.x,
+                current_point.y + step.y
+            ):
+                self.maze[current_point.y + step.y][current_point.x + step.x] = current_step + 1
+                next_points.append(Point(current_point.x + step.x, current_point.y + step.y))
 
         return next_points
 
@@ -147,7 +128,9 @@ class BFSMazeSolver:
         """
         Check if can make step
         """
-        return self.is_safe(current_point, x, y) and (self.maze[y][x] == " " or self.maze[y][x] == "F")
+        return self.is_safe(current_point, x, y) and (
+            self.maze[y][x] == " " or self.maze[y][x] == "F"
+        )
 
     def is_safe(self, current_point: Point, x: int, y: int) -> bool:
         """
