@@ -167,6 +167,7 @@ class BFSMazeSolver:
                     current_point = Point(
                         current_point.x + step.x, current_point.y + step.y
                     )
+                    break
             self.step_count += 1
             current_step -= 1
         self.maze[self.end_point.y][self.end_point.x] = "F"
