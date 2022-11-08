@@ -13,7 +13,6 @@ Print out the shortest path found as the result, on the screen.
 """
 
 import argparse
-import typing
 from collections import deque
 from typing import NamedTuple, List, IO, Tuple
 
