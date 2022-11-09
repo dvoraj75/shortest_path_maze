@@ -147,7 +147,7 @@ class BFSMazeSolver:
 
     def make_steps(self, current_point: Point) -> List[Point]:
         """
-        Look arround and make steps in four directions
+        Look around and make steps in four directions
         """
         current_step = int(self.maze.get_value(current_point.x, current_point.y))
         next_points = []
