@@ -70,11 +70,20 @@ class BFSMazeSolver:
     STEPS: Tuple = (LEFT, RIGHT, UP, DOWN)
 
     def __init__(
-        self, maze: List[List[str]], star_point_char: str, end_point_char: str
+        self,
+        maze: List[List[str]],
+        star_point_char: str = "0",
+        end_point_char: str = "F",
+        wall: str = "#",
+        free_space: str = " ",
     ):
         self.maze: List[List[str]] = maze
         self.start_point: Point = find_point(self.maze, star_point_char)
         self.end_point: Point = find_point(self.maze, end_point_char)
+        self._start_point_char: str = star_point_char
+        self._end_point_char: str = end_point_char
+        self._wall: str = wall
+        self._free_space: str = free_space
         self.step_count: int = 0
 
     def solve(self):
@@ -90,7 +99,7 @@ class BFSMazeSolver:
                 break
             points.extend(self.make_steps(current_point))
 
-        if maze[self.end_point.y][self.end_point.x] == "F":
+        if maze[self.end_point.y][self.end_point.x] == self._end_point_char:
             raise ValueError("Maze doesn't have solution!")
 
         self.find_shortest_path()
@@ -120,7 +129,7 @@ class BFSMazeSolver:
         Check if can make step
         """
         return self.is_safe(current_point, x, y) and (
-            self.maze[y][x] == " " or self.maze[y][x] == "F"
+            self.maze[y][x] == self._free_space or self.maze[y][x] == self._end_point_char
         )
 
     def is_safe(self, current_point: Point, x: int, y: int) -> bool:
@@ -159,7 +168,7 @@ class BFSMazeSolver:
                     break
             self.step_count += 1
             current_step -= 1
-        self.maze[self.end_point.y][self.end_point.x] = "F"
+        self.maze[self.end_point.y][self.end_point.x] = self._end_point_char
 
     def print_solution(self, _print_maze: bool = False) -> None:
         """
@@ -171,6 +180,11 @@ class BFSMazeSolver:
 
 
 if __name__ == "__main__":
+    """
+    TODO A ZLEPSENI: maze by asi mohla byt vlastni classa, protoze veci jako endpoit_char,
+    start_point_char,..etc nalezi spise bludisti nez solveru. Lepe by se pak pracovalo i 
+    s velikosti bludiste. Daly by se napsat i checky, ze bludiste je opravdu obdelnik atd... 
+    """
     parser = argparse.ArgumentParser(
         prog="MazeSolver", description="Program finds the shortest solution for maze"
     )
@@ -179,6 +193,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     maze = read_maze(args.maze_file)
 
-    solver = BFSMazeSolver(maze, "0", "F")
+    solver = BFSMazeSolver(maze)
     solver.solve()
     solver.print_solution(args.print_maze)
