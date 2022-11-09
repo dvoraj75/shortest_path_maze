@@ -17,16 +17,6 @@ from collections import deque
 from typing import NamedTuple, List, IO, Tuple
 
 
-class Solution(NamedTuple):
-    """
-    Simple class representing found solution
-    """
-
-    maze: List[List[str]]
-    steps: int
-    method: str
-
-
 class Point(NamedTuple):
     """
     Simple class representing point in maze
