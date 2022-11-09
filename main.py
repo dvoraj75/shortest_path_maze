@@ -66,6 +66,9 @@ class Maze:
         for line in self.maze:
             if len(line) != first_line:
                 raise ValueError("Maze is not rectangle!")
+            for c in line:
+                if c not in (self.start_point_char, self.end_point_char, self.wall, self.free_space):
+                    raise ValueError(f"Not allowed character: {c}")
 
     def print_maze(self):
         """
