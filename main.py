@@ -43,7 +43,7 @@ class Maze:
         maze: List[List[str]],
         start_point_char: str = "0",
         end_point_char: str = "F",
-        wall: str = "#",
+        wall: str = "X",
         free_space: str = " ",
     ):
         self.maze: List[List[str]] = maze
