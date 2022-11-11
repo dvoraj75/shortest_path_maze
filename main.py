@@ -190,6 +190,7 @@ class BFSMazeSolver:
         current_step = int(
             self.maze.get_value(self.maze.end_point.x, self.maze.end_point.y)
         )
+        self.step_count = current_step
         while current_step:
             for step in self.STEPS:
                 if (
@@ -216,7 +217,6 @@ class BFSMazeSolver:
                         current_point.x + step.x, current_point.y + step.y
                     )
                     break
-            self.step_count += 1
             current_step -= 1
         # reset start/end point
         self.maze.set_value(
