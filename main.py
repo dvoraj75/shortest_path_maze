@@ -237,7 +237,7 @@ class BFSMazeSolver:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        prog="MazeSolver", description="Program finds the shortest solution for maze"
+        description="Program finds the shortest solution for maze"
     )
     parser.add_argument("maze_file", type=argparse.FileType("r"))
     parser.add_argument("-p", "--print-maze", action="store_true", dest="print_maze")
